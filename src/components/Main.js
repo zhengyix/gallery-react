@@ -55,7 +55,7 @@ var  ImgFigure =React.createClass({
         if(this.props.arrange.rotate){
             (['MozTransform','msTransform','WebkitTransform','transform']).forEach(function(value){
                 styleObj[value] = 'rotate('+this.props.arrange.rotate + 'deg)';
-            }.bind(this))           
+            }.bind(this));          
         }
 
         if(this.props.arrange.isCenter){
@@ -67,8 +67,7 @@ var  ImgFigure =React.createClass({
         //console.log(this.props.arrange);
         return (
                 <figure className={imgFigureClassName} style={styleObj} onClick={this.handleClick}>
-                    <img src={this.props.data.imageURL} 
-                         alt={this.props.data.title}/>
+                    <img src={this.props.data.imageURL}  alt={this.props.data.title}/>
                     <figcaption>
                         <h2 className="img-title">{this.props.data.title}</h2>
                         <div className="img-back" onClick={this.handleClick}>
@@ -86,12 +85,29 @@ var  ImgFigure =React.createClass({
 var ControllerUnit = React.createClass({
     handleClick:function(e){
 
+        //如果点击的是当前的选中太按钮，则翻转图片，否则将对应的图片居中
+        if(this.props.arrange.isCenter){
+            this.props.inverse();
+        }else{
+            this.props.center();
+        }
         e.stopPropagation();
-        e.preventDafult();
+        e.preventDefault();
     },
     render:function(){
+        var controllerUnitClassName='controller-unit';
+
+        //如果对应的是居中的图片，显示控制按钮的居中态
+        if(this.props.arrange.isCenter){
+            controllerUnitClassName += ' is-center';
+
+            //如果同时对应的实现反转图片，显示控制台的翻转台
+            if(this.props.arrange.isInverse){
+                controllerUnitClassName += ' is-inverse';
+            }
+        }
         return (
-                <span className="controller-unit" onClick={this.handleClick}></span>
+                <span className={controllerUnitClassName} onClick={this.handleClick}></span>
             );
     }
 })
@@ -292,7 +308,8 @@ var  AppComponent = React.createClass({
         imgFigures.push(<ImgFigure key={index} data={value} ref={'imgFigure'+index}
          arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>);
         
-        controllerUnits.push(<ControllerUnit />)
+        controllerUnits.push(<ControllerUnit key={index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} 
+        center={this.center(index)}/>)
     }.bind(this))
 
 
